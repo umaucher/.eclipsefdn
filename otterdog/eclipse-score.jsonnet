@@ -624,9 +624,8 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
       template_repository: null,
       allow_rebase_merge: true,
       allow_update_branch: true,
-      branch_protection_rules: [
-        main_branch_protection_rule
-      ],
+      # Merge queue (instead of requires_strict_status_checks) keeps PR branches from
+      # needing a manual rebase after every merge to main.
       rulesets: [
           orgs.newRepoRuleset('main') {
             include_refs+: [
@@ -635,6 +634,9 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
             required_pull_request+: default_review_rule,
             allows_force_pushes: false,
             requires_linear_history: true,
+            required_merge_queue: orgs.newMergeQueue() {
+              merge_method: "SQUASH",
+            },
           },
         ],
     },
