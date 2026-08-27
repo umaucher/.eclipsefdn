@@ -925,6 +925,53 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
       ],
     },
 
+    newDependableElementRepo('inc_ecu_model') {
+      description: "Repository for an ECU model",
+
+      # Deviations from standard dependable element repository settings:
+      template_repository: null,
+      has_projects: true,
+      homepage: null,
+      dependabot_security_updates_enabled: false,
+      allow_rebase_merge: true,
+      allow_merge_commit: true,
+      allow_update_branch: true,
+      private_vulnerability_reporting_enabled: true,
+      code_scanning_default_languages+: [
+        "actions",
+        "c-cpp",
+        "python",
+      ],
+      has_discussions: true,
+      # Merge commits must contain the PR body for checklist evidence
+      merge_commit_title: "PR_TITLE",
+      merge_commit_message: "PR_BODY",
+      rulesets: [
+        orgs.newRepoRuleset('main') {
+          include_refs+: [
+            "refs/heads/main"
+          ],
+          required_pull_request+: default_review_rule,
+          bypass_actors+: [
+            "@eclipse-score/codeowner-lola:pull_request",
+          ],
+          allows_force_pushes: false,
+          required_merge_queue: orgs.newMergeQueue() {
+            merge_method: "MERGE",
+            status_check_timeout: 120,
+          },
+        },
+        block_tagging(
+          [
+            "*", # block all tag creations
+          ],
+          [
+            "@eclipse-score/codeowner-lola",
+          ],
+        ),
+      ],
+    },
+
     newInfrastructureTeamRepo('rules_imagefs', subcategory = "integration") {
       description: "Repository for Image FileSystem Bazel rules and toolchains definitions",
       environments+: qnx_environments,
@@ -935,35 +982,8 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
       environments+: qnx_environments,
     },
 
-    newInfrastructureTeamRepo('toolchains_gcc', subcategory = "toolchains") {
-      description: "Bazel toolchains for GNU GCC",
-    },
-
     newInfrastructureTeamRepo('toolchains_gcc_packages', subcategory = "toolchains") {
       description: "Bazel toolchains for GNU GCC",
-    },
-
-    newInfrastructureTeamRepo('toolchains_qnx', subcategory = "toolchains") {
-      description: "Bazel toolchains for QNX",
-
-      # Deviations from standard newScoreRepo settings:
-      environments+: qnx_environments,
-      rulesets: [
-        orgs.newRepoRuleset('main') {
-          include_refs+: [
-            "refs/heads/main"
-          ],
-          required_pull_request+: default_review_rule,
-          required_status_checks+: {
-            status_checks+: [
-              "toolchains-qnx-build-all",
-            ],
-          },
-          required_merge_queue: orgs.newMergeQueue() {
-            merge_method: "MERGE",
-          },
-        },
-      ],
     },
 
     newInfrastructureTeamRepo('toolchains_rust', subcategory = "toolchains") {
@@ -1366,6 +1386,35 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
 
 
     # ---- Archived repositories ----
+
+    newInfrastructureTeamRepo('toolchains_gcc', subcategory = "toolchains") {
+      archived: true,
+      description: "Bazel toolchains for GNU GCC",
+    },
+
+    newInfrastructureTeamRepo('toolchains_qnx', subcategory = "toolchains") {
+      archived: true,
+      description: "Bazel toolchains for QNX",
+
+      # Deviations from standard newScoreRepo settings:
+      environments+: qnx_environments,
+      rulesets: [
+        orgs.newRepoRuleset('main') {
+          include_refs+: [
+            "refs/heads/main"
+          ],
+          required_pull_request+: default_review_rule,
+          required_status_checks+: {
+            status_checks+: [
+              "toolchains-qnx-build-all",
+            ],
+          },
+          required_merge_queue: orgs.newMergeQueue() {
+            merge_method: "MERGE",
+          },
+        },
+      ],
+    },
 
     orgs.newRepo('inc_feo') {
       allow_merge_commit: true,
