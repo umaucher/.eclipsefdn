@@ -176,6 +176,7 @@ local qnx_enabled_repos = [
     "scrample",
     "time",
     "toolchains_qnx",
+    "config_management",
 ];
 
 
@@ -202,6 +203,9 @@ local qnx_environments = [
 local newDependableElementRepo(name, subcategory = null) = newScoreRepo(name, pages = true, category = "modules", subcategory = subcategory) {
   template_repository: "eclipse-score/module_template",
   environments+: qnx_environments,
+  workflows+: {
+    max_cache_size_gb: 50,
+  }
 };
 
 # Repositories owned or maintained by the infrastructure community should use this helper.
@@ -255,7 +259,10 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
         description: "Subcategory used to further group repositories within a category in the auto-generated organization README file",
         value_type: "string",
       },
-    ]
+    ],
+    workflows+: {
+      max_cache_size_gb: 50,
+    }
   },
   teams+: [
     orgs.newTeam('automotive-score-technical-leads') {
@@ -687,6 +694,9 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
           deployment_branch_policy: "all",
         },
       ],
+      workflows+: {
+        max_cache_size_gb: 50,
+      }
     },
 
     newInfrastructureTeamRepo('reference_integration', true, subcategory = "integration") {
@@ -735,6 +745,9 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
             },
           },
         ],
+        workflows+: {
+          max_cache_size_gb: 50,
+        }
     },
 
     newInfrastructureTeamRepo('os_images', false, subcategory = "integration") {
@@ -789,6 +802,9 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
           },
         },
       ],
+      workflows+: {
+        max_cache_size_gb: 50,
+      },
     },
 
     newInfrastructureTeamRepo('tools') {
@@ -956,6 +972,13 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
             "@eclipse-score/codeowner-lola:pull_request",
           ],
           allows_force_pushes: false,
+          required_status_checks+: {
+            status_checks+: [
+              "Build & Test",
+              "copyright",
+              "ruff",
+            ],
+          },
           required_merge_queue: orgs.newMergeQueue() {
             merge_method: "MERGE",
             status_check_timeout: 120,
@@ -980,6 +1003,9 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
     newInfrastructureTeamRepo('bazel_cpp_toolchains', subcategory = "toolchains") {
       description: "Bazel C/C++ toolchain configuration repository",
       environments+: qnx_environments,
+      workflows+: {
+        max_cache_size_gb: 50,
+      }
     },
 
     newInfrastructureTeamRepo('toolchains_gcc_packages', subcategory = "toolchains") {
@@ -998,6 +1024,9 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
     newInfrastructureTeamRepo('module_template', pages = true) {
       description: "C++ & Rust Bazel Template Repository",
       is_template: true,
+      workflows+: {
+        max_cache_size_gb: 50,
+      }
     },
 
     newInfrastructureTeamRepo('cicd-actions', subcategory = "automation") {
@@ -1014,6 +1043,24 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
       environments+: [
         orgs.newEnvironment('copilot'),
       ],
+      workflows+: {
+        max_cache_size_gb: 50,
+      }
+    },
+
+    newInfrastructureTeamRepo('coverage_tool', pages = true, subcategory = "tooling") {
+      description: "LLVM source-based code coverage pipeline for Eclipse S-CORE (Bazel module score_coverage)",
+      topics+: [
+        "bazel",
+        "code-coverage",
+        "llvm-cov",
+      ],
+      allow_rebase_merge: true,
+      allow_update_branch: true,
+      environments+: [
+        orgs.newEnvironment('copilot'),
+      ],
+      # Required status checks are added once the repository has its CI workflows.
     },
 
     newDependableElementRepo('orchestrator') {
@@ -1069,6 +1116,9 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
             requires_linear_history: true,
           },
         ],
+        workflows+: {
+          max_cache_size_gb: 50,
+        }
     },
 
     newInfrastructureTeamRepo('score_rust_policies', subcategory = "toolchains") {
@@ -1191,6 +1241,7 @@ orgs.newOrg('automotive.score', 'eclipse-score') {
       description: 'Repository for the AutoSD Platform and associated Tooling',
       gh_pages_build_type: "workflow",
       template_repository: "eclipse-score/module_template",
+      homepage: "https://eclipse-score.github.io/os_autosd",
     },
 
     newScoreRepo('bazel-tools-python') {
