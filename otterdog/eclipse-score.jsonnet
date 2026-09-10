@@ -82,7 +82,7 @@ local active_languages = {
   "more-disk-space": ['actions', 'javascript-typescript'],
   "nlohmann_json": ['actions', 'c-cpp', 'python'],
   "orchestrator": ['actions', 'python'],
-  "os_autosd": ['actions', 'c-cpp'],
+  "os_autosd": ['actions'],
   "os_images": ['actions', 'python'],
   "persistency": ['actions', 'c-cpp', 'python'],
   "process_description": ['actions', 'javascript-typescript'],
